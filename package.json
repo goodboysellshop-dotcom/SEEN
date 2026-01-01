@@ -1,0 +1,12 @@
+{
+  "name": "seen-search-engine",
+  "version": "1.0.0",
+  "description": "Поисковая система для сайтов SEEN",
+  "main": "index.html",
+  "scripts": {
+    "start": "live-server --port=8080"
+  },
+  "keywords": ["search", "engine", "поиск", "система"],
+  "author": "",
+  "license": "MIT"
+}
