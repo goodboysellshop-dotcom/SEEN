@@ -1,6 +1,43 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <!-- ... существующий head ... -->
+    <script src="auth-system.js"></script>
+    <script>
+        // Проверка авторизации при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!window.authSystem || !window.authSystem.isAuthenticated()) {
+                // Если не авторизован, перенаправляем на страницу входа
+                window.location.href = 'auth-login.html';
+                return;
+            }
+            
+            // Показать информацию о сессии
+            const sessionInfo = window.authSystem.getSessionInfo();
+            if (sessionInfo.loggedIn) {
+                console.log('Сессия активна:', sessionInfo);
+            }
+        });
+        
+        // Функция выхода
+        function logout() {
+            if (window.authSystem) {
+                window.authSystem.logout();
+            }
+            window.location.href = 'auth-login.html';
+        }
+    </script>
+</head>
+<body>
+    <!-- В шапке админки добавьте кнопку выхода -->
+    <div class="admin-actions">
+        <a href="index.html" class="header-btn">
+            <i class="fas fa-search"></i> К поисковику
+        </a>
+        <button class="header-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Выйти
+        </button>
+    </div>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SEEN Search - Панель управления</title>
