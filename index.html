@@ -7,9 +7,718 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔍</text></svg>">
+    <style>
+        /* Встроенные стили для быстрой работы */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .main-header {
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            color: white;
+            padding: 30px;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4285f4;
+            font-size: 24px;
+        }
+        
+        .logo-text h1 {
+            font-size: 28px;
+            margin: 0 0 5px 0;
+        }
+        
+        .tagline {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .main-nav {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 25px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            border: 2px solid rgba(255,255,255,0.3);
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* Search Section */
+        .search-section {
+            padding: 40px;
+        }
+        
+        .search-box {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 40px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .search-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .search-header h2 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .search-subtitle {
+            font-size: 18px;
+            color: #666;
+        }
+        
+        /* Search Form */
+        .search-form {
+            margin-bottom: 30px;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .search-input-wrapper {
+            position: relative;
+            flex: 1;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 20px;
+        }
+        
+        #searchQuery {
+            width: 100%;
+            padding: 18px 60px 18px 50px;
+            font-size: 18px;
+            border: 2px solid #ddd;
+            border-radius: 30px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        #searchQuery:focus {
+            border-color: #4285f4;
+            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
+        }
+        
+        .clear-btn {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 5px;
+        }
+        
+        .clear-btn:hover {
+            color: #333;
+        }
+        
+        .search-btn {
+            padding: 18px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(66, 133, 244, 0.3);
+        }
+        
+        /* Options */
+        .search-options {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+        
+        .options-group {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        
+        .checkbox-custom {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .option-item input:checked + .checkbox-custom {
+            background: #4285f4;
+            border-color: #4285f4;
+        }
+        
+        .option-item input:checked + .checkbox-custom::after {
+            content: '✓';
+            color: white;
+        }
+        
+        .search-tips {
+            margin-top: 15px;
+            color: #666;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .tip-example {
+            color: #4285f4;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        
+        /* Quick Tags */
+        .quick-tags {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #eee;
+        }
+        
+        .tags-title {
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .tag-btn {
+            padding: 8px 16px;
+            background: #e8f0fe;
+            border: none;
+            border-radius: 20px;
+            color: #1a73e8;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tag-btn:hover {
+            background: #4285f4;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* Results */
+        .results-section {
+            padding: 0 40px 40px;
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .stats {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid #e0e0e0;
+            flex: 1;
+        }
+        
+        .stats-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .stats-icon {
+            font-size: 24px;
+            color: #4285f4;
+        }
+        
+        .stats-main {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .stats-sub {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .results-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid #ddd;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .control-btn:hover {
+            background: #4285f4;
+            color: white;
+            border-color: #4285f4;
+        }
+        
+        .results-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        /* Results Items */
+        .result-item {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+        
+        .result-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-color: #4285f4;
+        }
+        
+        .result-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a0dab;
+            text-decoration: none;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .result-title:hover {
+            text-decoration: underline;
+        }
+        
+        .result-category {
+            background: #e8f0fe;
+            color: #1a73e8;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        
+        .result-url {
+            color: #006621;
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .result-description {
+            color: #545454;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .result-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .result-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* Quick Search */
+        .quick-search {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .quick-search-header h4 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .quick-search-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .quick-search-btn {
+            padding: 12px 25px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .quick-search-btn:hover {
+            background: #4285f4;
+            color: white;
+            border-color: #4285f4;
+            transform: translateY(-2px);
+        }
+        
+        /* Instructions */
+        .instructions-section {
+            padding: 40px;
+            background: #f8f9fa;
+        }
+        
+        .instructions-box {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .instructions-box h3 {
+            font-size: 28px;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .instructions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .instruction {
+            text-align: center;
+        }
+        
+        .instruction-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            margin: 0 auto 20px;
+        }
+        
+        .instruction h4 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .instruction p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* Footer */
+        .main-footer {
+            background: #202124;
+            color: white;
+            padding: 40px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .footer-desc {
+            color: #bdc1c6;
+            line-height: 1.6;
+        }
+        
+        .footer-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .stat-item i {
+            font-size: 24px;
+            color: #4285f4;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            display: block;
+        }
+        
+        .stat-label {
+            color: #bdc1c6;
+            font-size: 14px;
+        }
+        
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .footer-link {
+            color: #bdc1c6;
+            text-decoration: none;
+            padding: 10px 0;
+            border-bottom: 1px solid #3c4043;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: color 0.3s;
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            font-size: 16px;
+        }
+        
+        .footer-link:hover {
+            color: white;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #3c4043;
+            color: #9aa0a6;
+            font-size: 14px;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+            
+            .search-section,
+            .results-section,
+            .instructions-section {
+                padding: 20px;
+            }
+            
+            .search-box {
+                padding: 20px;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .search-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .main-nav {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .nav-link {
+                justify-content: center;
+            }
+            
+            .instructions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-search-buttons {
+                flex-direction: column;
+            }
+            
+            .quick-search-btn {
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
+        <!-- Header -->
         <header class="main-header">
             <div class="header-content">
                 <div class="logo">
@@ -18,23 +727,24 @@
                     </div>
                     <div class="logo-text">
                         <h1>SEEN Search</h1>
-                        <p class="tagline">Умный поиск по веб-сайтам</p>
+                        <div class="tagline">Умный поиск по веб-сайтам</div>
                     </div>
                 </div>
                 <nav class="main-nav">
                     <a href="#how-to-use" class="nav-link">
                         <i class="fas fa-question-circle"></i> Как использовать
                     </a>
-                    <a href="admin.html" class="nav-link admin">
+                    <a href="admin.html" class="nav-link">
                         <i class="fas fa-cogs"></i> Панель управления
                     </a>
                 </nav>
             </div>
         </header>
 
-        <main class="main-content">
-            <!-- Поисковая секция -->
-            <section class="search-section">
+        <!-- Main Content -->
+        <main>
+            <!-- Search Section -->
+            <section class="search-section" id="search">
                 <div class="search-box">
                     <div class="search-header">
                         <h2><i class="fas fa-search"></i> Поиск по сайтам</h2>
@@ -45,10 +755,10 @@
                         <div class="input-group">
                             <div class="search-input-wrapper">
                                 <i class="fas fa-search search-icon"></i>
-                                <input type="text" id="searchQuery" 
+                                <input type="text" 
+                                       id="searchQuery" 
                                        placeholder="Введите запрос для поиска..." 
-                                       autocomplete="off"
-                                       aria-label="Поисковый запрос">
+                                       autocomplete="off">
                                 <button type="button" class="clear-btn" id="clearSearch">
                                     <i class="fas fa-times"></i>
                                 </button>
@@ -90,7 +800,7 @@
                 </div>
             </section>
 
-            <!-- Статистика и результаты -->
+            <!-- Results Section -->
             <section class="results-section">
                 <div class="results-header">
                     <div class="stats" id="stats">
@@ -115,74 +825,72 @@
 
                 <div class="results-container">
                     <div class="results" id="results">
-                        <!-- Примеры сайтов при первой загрузке -->
+                        <!-- Results will be loaded here -->
                         <div class="welcome-message">
                             <div class="welcome-icon">
                                 <i class="fas fa-globe"></i>
                             </div>
                             <h3>Примеры сайтов в системе</h3>
-                            <p class="welcome-text">Начните поиск, введя запрос в поле выше. В системе 8 сайтов.</p>
+                            <p>Вот несколько сайтов, которые вы можете найти:</p>
                             
-                            <div class="popular-sites">
-                                <h4>Популярные сайты:</h4>
-                                <div class="popular-grid">
-                                    <div class="popular-site">
-                                        <a href="https://www.google.com" class="popular-title" target="_blank">
-                                            Google - Поисковая система
-                                        </a>
-                                        <div class="popular-url">google.com</div>
-                                        <div class="popular-desc">Крупнейшая в мире поисковая система</div>
-                                    </div>
-                                    <div class="popular-site">
-                                        <a href="https://www.youtube.com" class="popular-title" target="_blank">
-                                            YouTube - Видеохостинг
-                                        </a>
-                                        <div class="popular-url">youtube.com</div>
-                                        <div class="popular-desc">Самый популярный видеохостинг в мире</div>
-                                    </div>
-                                    <div class="popular-site">
-                                        <a href="https://www.wikipedia.org" class="popular-title" target="_blank">
-                                            Википедия - Свободная энциклопедия
-                                        </a>
-                                        <div class="popular-url">wikipedia.org</div>
-                                        <div class="popular-desc">Многоязычная общедоступная энциклопедия</div>
-                                    </div>
-                                    <div class="popular-site">
-                                        <a href="https://www.github.com" class="popular-title" target="_blank">
-                                            GitHub - Платформа для разработчиков
-                                        </a>
-                                        <div class="popular-url">github.com</div>
-                                        <div class="popular-desc">Крупнейший веб-сервис для хостинга IT-проектов</div>
-                                    </div>
+                            <div class="popular-grid">
+                                <div class="popular-site">
+                                    <a href="https://www.google.com" class="popular-title" target="_blank">
+                                        Google - Поисковая система
+                                    </a>
+                                    <div class="popular-url">google.com</div>
+                                    <div class="popular-desc">Крупнейшая в мире поисковая система</div>
                                 </div>
-                            </div>
-                            
-                            <div class="welcome-tips">
-                                <h4>Советы по поиску:</h4>
-                                <ul>
-                                    <li>Используйте ключевые слова для точного поиска</li>
-                                    <li>Попробуйте разные варианты написания</li>
-                                    <li>Используйте фильтры для уточнения результатов</li>
-                                    <li>Добавляйте новые сайты через панель управления</li>
-                                </ul>
+                                <div class="popular-site">
+                                    <a href="https://www.youtube.com" class="popular-title" target="_blank">
+                                        YouTube - Видеохостинг
+                                    </a>
+                                    <div class="popular-url">youtube.com</div>
+                                    <div class="popular-desc">Самый популярный видеохостинг</div>
+                                </div>
+                                <div class="popular-site">
+                                    <a href="https://www.wikipedia.org" class="popular-title" target="_blank">
+                                        Википедия - Энциклопедия
+                                    </a>
+                                    <div class="popular-url">wikipedia.org</div>
+                                    <div class="popular-desc">Свободная многоязычная энциклопедия</div>
+                                </div>
+                                <div class="popular-site">
+                                    <a href="https://www.github.com" class="popular-title" target="_blank">
+                                        GitHub - Платформа разработчиков
+                                    </a>
+                                    <div class="popular-url">github.com</div>
+                                    <div class="popular-desc">Крупнейший хостинг IT-проектов</div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Быстрый поиск -->
+                    <!-- Quick Search -->
                     <div class="quick-search" id="quickSearchSection">
                         <div class="quick-search-header">
                             <h4><i class="fas fa-bolt"></i> Быстрый поиск</h4>
                             <p>Попробуйте эти популярные запросы:</p>
                         </div>
                         <div class="quick-search-buttons" id="quickSearchButtons">
-                            <!-- Заполняется JavaScript -->
+                            <button class="quick-search-btn" data-query="технологии">
+                                <i class="fas fa-microchip"></i> Технологии
+                            </button>
+                            <button class="quick-search-btn" data-query="образование">
+                                <i class="fas fa-graduation-cap"></i> Образование
+                            </button>
+                            <button class="quick-search-btn" data-query="новости">
+                                <i class="fas fa-newspaper"></i> Новости
+                            </button>
+                            <button class="quick-search-btn" data-query="путешествия">
+                                <i class="fas fa-plane"></i> Путешествия
+                            </button>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Как использовать -->
+            <!-- Instructions -->
             <section class="instructions-section" id="how-to-use">
                 <div class="instructions-box">
                     <h3><i class="fas fa-info-circle"></i> Как использовать SEEN Search</h3>
@@ -220,6 +928,7 @@
             </section>
         </main>
 
+        <!-- Footer -->
         <footer class="main-footer">
             <div class="footer-content">
                 <div class="footer-info">
@@ -255,7 +964,7 @@
                     <a href="#how-to-use" class="footer-link">
                         <i class="fas fa-question-circle"></i> Помощь
                     </a>
-                    <button class="footer-link" id="resetDataBtn">
+                    <button class="footer-link" onclick="resetData()">
                         <i class="fas fa-redo"></i> Сбросить данные
                     </button>
                 </div>
@@ -263,164 +972,83 @@
             
             <div class="footer-bottom">
                 <p>SEEN Search Engine &copy; 2023 | Все права защищены</p>
-                <p class="footer-version">Версия 2.0 | <span id="lastUpdate">Сегодня</span></p>
+                <p class="footer-version">Версия 2.0</p>
             </div>
         </footer>
     </div>
 
-    <!-- Модальное окно экспорта -->
+    <!-- Export Modal -->
     <div id="exportModal" class="modal">
         <div class="modal-content">
-            <span class="close-modal">&times;</span>
+            <button class="close-modal">&times;</button>
             <h3><i class="fas fa-download"></i> Экспорт результатов</h3>
             <div class="modal-body">
+                <p>Выберите формат экспорта:</p>
                 <div class="export-options">
-                    <div class="export-option">
-                        <input type="radio" id="exportJson" name="exportFormat" value="json" checked>
-                        <label for="exportJson">
-                            <i class="fas fa-code"></i>
-                            <div>
-                                <span>JSON формат</span>
-                                <small>Для программного использования</small>
-                            </div>
-                        </label>
-                    </div>
-                    <div class="export-option">
-                        <input type="radio" id="exportCsv" name="exportFormat" value="csv">
-                        <label for="exportCsv">
-                            <i class="fas fa-file-csv"></i>
-                            <div>
-                                <span>CSV формат</span>
-                                <small>Для табличных редакторов</small>
-                            </div>
-                        </label>
-                    </div>
-                    <div class="export-option">
-                        <input type="radio" id="exportHtml" name="exportFormat" value="html">
-                        <label for="exportHtml">
-                            <i class="fas fa-file-code"></i>
-                            <div>
-                                <span>HTML формат</span>
-                                <small>Для веб-страниц</small>
-                            </div>
-                        </label>
-                    </div>
+                    <label>
+                        <input type="radio" name="exportFormat" value="json" checked> JSON
+                    </label>
+                    <label>
+                        <input type="radio" name="exportFormat" value="csv"> CSV
+                    </label>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" id="doExport">
-                    <i class="fas fa-download"></i> Экспортировать
-                </button>
-                <button class="btn btn-secondary" onclick="hideModal('exportModal')">
-                    Отмена
-                </button>
+                <button class="btn-secondary" onclick="hideModal('exportModal')">Отмена</button>
+                <button class="btn-primary" id="doExport">Экспортировать</button>
             </div>
         </div>
     </div>
 
-    <!-- Скрипты -->
+    <!-- Scripts -->
     <script src="data-manager-fixed.js"></script>
     <script src="script.js"></script>
     
     <script>
-        // Обработчики для модального окна
+        // Функция сброса данных
+        function resetData() {
+            if (confirm('Сбросить все данные до начального состояния?')) {
+                if (window.dataManager && window.dataManager.resetData) {
+                    window.dataManager.resetData();
+                    alert('Данные сброшены! Страница будет перезагружена.');
+                    location.reload();
+                }
+            }
+        }
+        
+        // Функция скрытия модального окна
+        function hideModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+        
+        // Обработка модальных окон
         document.addEventListener('DOMContentLoaded', function() {
             // Закрытие модальных окон
             document.querySelectorAll('.close-modal').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    const modal = this.closest('.modal');
-                    modal.style.display = 'none';
+                    this.closest('.modal').classList.remove('show');
                 });
             });
             
-            // Закрытие при клике вне окна
+            // Закрытие по клику вне окна
             document.querySelectorAll('.modal').forEach(modal => {
                 modal.addEventListener('click', function(e) {
                     if (e.target === this) {
-                        this.style.display = 'none';
+                        this.classList.remove('show');
                     }
                 });
             });
             
-            // Показать модальное окно экспорта
-            const exportBtn = document.getElementById('exportResults');
-            const exportModal = document.getElementById('exportModal');
+            // Экспорт результатов
+            document.getElementById('exportResults')?.addEventListener('click', function() {
+                document.getElementById('exportModal').classList.add('show');
+            });
             
-            if (exportBtn && exportModal) {
-                exportBtn.addEventListener('click', function() {
-                    exportModal.style.display = 'flex';
-                });
-            }
-            
-            // Экспорт данных
-            const doExportBtn = document.getElementById('doExport');
-            if (doExportBtn) {
-                doExportBtn.addEventListener('click', function() {
-                    const format = document.querySelector('input[name="exportFormat"]:checked').value;
-                    exportData(format);
-                });
-            }
-            
-            // Кнопка сброса данных
-            const resetBtn = document.getElementById('resetDataBtn');
-            if (resetBtn) {
-                resetBtn.addEventListener('click', function() {
-                    if (confirm('Вы уверены, что хотите сбросить все данные? Это удалит все добавленные сайты и восстановит начальные данные.')) {
-                        if (window.dataManager && window.dataManager.resetData) {
-                            window.dataManager.resetData();
-                            alert('Данные сброшены! Страница будет перезагружена.');
-                            location.reload();
-                        }
-                    }
-                });
-            }
-            
-            // Обновление даты
-            const lastUpdateEl = document.getElementById('lastUpdate');
-            if (lastUpdateEl) {
-                const now = new Date();
-                lastUpdateEl.textContent = now.toLocaleDateString('ru-RU', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric'
-                });
-            }
-            
-            // Функция экспорта данных
-            function exportData(format) {
-                try {
-                    if (!window.dataManager) {
-                        alert('Система данных не загружена');
-                        return;
-                    }
-                    
-                    const data = window.dataManager.exportData(format);
-                    const blob = new Blob([data], { type: 'text/plain' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `seen-search-data-${new Date().toISOString().slice(0,10)}.${format}`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                    
-                    hideModal('exportModal');
-                    alert('Данные успешно экспортированы!');
-                    
-                } catch (error) {
-                    console.error('Ошибка экспорта:', error);
-                    alert('Ошибка при экспорте данных: ' + error.message);
-                }
-            }
-            
-            // Функция скрытия модального окна
-            window.hideModal = function(modalId) {
-                const modal = document.getElementById(modalId);
-                if (modal) {
-                    modal.style.display = 'none';
-                }
-            };
+            document.getElementById('doExport')?.addEventListener('click', function() {
+                const format = document.querySelector('input[name="exportFormat"]:checked').value;
+                alert('Экспорт в формате ' + format.toUpperCase() + ' будет реализован позже');
+                hideModal('exportModal');
+            });
         });
     </script>
 </body>
