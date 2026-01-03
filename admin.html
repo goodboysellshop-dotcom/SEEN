@@ -1,6 +1,34 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEEN Search - Панель управления</title>
+    
+    <!-- Проверка авторизации -->
+    <script>
+        // Проверяем авторизацию
+        if (sessionStorage.getItem('admin_authenticated') !== 'true') {
+            // Если не авторизован - на страницу входа
+            window.location.href = 'login.html';
+        }
+        
+        // Проверяем время сессии (8 часов)
+        const loginTime = parseInt(sessionStorage.getItem('admin_login_time') || 0);
+        const currentTime = Date.now();
+        const sessionDuration = 8 * 60 * 60 * 1000; // 8 часов в миллисекундах
+        
+        if (currentTime - loginTime > sessionDuration) {
+            // Сессия истекла
+            sessionStorage.removeItem('admin_authenticated');
+            sessionStorage.removeItem('admin_login_time');
+            window.location.href = 'login.html';
+        }
+    </script>
+    
+    <!-- Остальные стили и скрипты -->
+    <link rel="stylesheet" href="style.css">
+    <!-- ... остальной код ... -->
     <!-- ... существующий head ... -->
     <script src="auth-system.js"></script>
     <script>
