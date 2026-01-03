@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEEN Search - Вход в панель управления</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+        }
+        
+        .logo-text h1 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .logo-text p {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .login-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .step {
+            padding: 25px;
+            border-radius: 15px;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            position: relative;
+            text-align: left;
+        }
+        
+        .step-number {
+            position: absolute;
+            top: -15px;
+            left: -15px;
+            width: 40px;
+            height: 40px;
+            background: #4285f4;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .step h3 {
+            margin-bottom: 10px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .step p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .telegram-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 25px;
+            background: #0088cc;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+        
+        .telegram-link:hover {
+            background: #0077b5;
+            transform: translateY(-2px);
+        }
+        
+        .code-input-section {
+            margin: 30px 0;
+        }
+        
+        .code-input-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .code-input {
+            width: 50px;
+            height: 60px;
+            font-size: 24px;
+            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .code-input:focus {
+            border-color: #4285f4;
+            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
+        }
+        
+        .code-input.filled {
+            border-color: #34a853;
+            background: #f8fff9;
+        }
+        
+        .timer {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .timer.expired {
+            color: #ea4335;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(66, 133, 244, 0.3);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #666;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .message.show {
+            display: block;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .message-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .message-info {
+            background: #e8f0fe;
+            color: #1a73e8;
+            border: 1px solid #d2e3fc;
+        }
+        
+        .login-footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .login-footer a {
+            color: #4285f4;
+            text-decoration: none;
+        }
+        
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+            
+            .code-input-group {
+                gap: 5px;
+            }
+            
+            .code-input {
+                width: 45px;
+                height: 55px;
+                font-size: 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .code-input {
+                width: 40px;
+                height: 50px;
+                font-size: 18px;
+            }
+            
+            .btn {
+                padding: 12px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="logo-text">
+                <h1>SEEN Search</h1>
+                <p>Панель управления</p>
+            </div>
+        </div>
+        
+        <!-- Сообщения -->
+        <div class="message" id="loginMessage"></div>
+        
+        <!-- Шаги входа -->
+        <div class="login-steps" id="loginSteps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3><i class="fab fa-telegram"></i> Подключите Telegram</h3>
+                <p>Для входа в панель управления необходимо подключить Telegram бота</p>
+                <a href="https://t.me/SEENSearchBot" class="telegram-link" target="_blank">
+                    <i class="fab fa-telegram"></i> Перейти в Telegram
+                </a>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3><i class="fas fa-key"></i> Запросите код доступа</h3>
+                <p>Нажмите кнопку ниже, чтобы получить код в Telegram</p>
+                <button class="btn btn-primary" id="requestCodeBtn">
+                    <i class="fas fa-paper-plane"></i> Получить код
+                </button>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3><i class="fas fa-sign-in-alt"></i> Введите код</h3>
+                <p>Введите 6-значный код, полученный в Telegram</p>
+                <div class="code-input-section" id="codeSection" style="display: none;">
+                    <div class="code-input-group">
+                        <input type="text" maxlength="1" class="code-input" data-index="0">
+                        <input type="text" maxlength="1" class="code-input" data-index="1">
+                        <input type="text" maxlength="1" class="code-input" data-index="2">
+                        <input type="text" maxlength="1" class="code-input" data-index="3">
+                        <input type="text" maxlength="1" class="code-input" data-index="4">
+                        <input type="text" maxlength="1" class="code-input" data-index="5">
+                    </div>
+                    <div class="timer" id="codeTimer"></div>
+                    <button class="btn btn-primary" id="verifyCodeBtn" disabled>
+                        <i class="fas fa-check"></i> Войти
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Альтернативный вход (только для разработки) -->
+        <div class="login-footer">
+            <p>Возникли проблемы? <a href="#" id="devLogin">Войти как разработчик</a></p>
+            <p>Вернуться на <a href="index.html">главную страницу</a></p>
+        </div>
+    </div>
+
+    <script src="auth-system.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Проверяем, не авторизован ли уже пользователь
+            if (window.authSystem && window.authSystem.isAuthenticated()) {
+                window.location.href = 'admin.html';
+                return;
+            }
+            
+            // Элементы DOM
+            const requestCodeBtn = document.getElementById('requestCodeBtn');
+            const verifyCodeBtn = document.getElementById('verifyCodeBtn');
+            const codeSection = document.getElementById('codeSection');
+            const codeInputs = document.querySelectorAll('.code-input');
+            const codeTimer = document.getElementById('codeTimer');
+            const loginMessage = document.getElementById('loginMessage');
+            const devLoginLink = document.getElementById('devLogin');
+            
+            let codeExpiryTime = 0;
+            let timerInterval = null;
+            
+            // Запрос кода
+            requestCodeBtn.addEventListener('click', async function() {
+                showMessage('Запрашиваем код...', 'info');
+                requestCodeBtn.disabled = true;
+                requestCodeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправляем...';
+                
+                try {
+                    const result = await window.authSystem.requestLoginCode();
+                    
+                    if (result.success) {
+                        showMessage('Код отправлен в Telegram!', 'success');
+                        codeSection.style.display = 'block';
+                        startTimer();
+                        requestCodeBtn.style.display = 'none';
+                    } else {
+                        showMessage(result.message, 'error');
+                        requestCodeBtn.disabled = false;
+                        requestCodeBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Получить код';
+                    }
+                    
+                } catch (error) {
+                    showMessage('Ошибка: ' + error.message, 'error');
+                    requestCodeBtn.disabled = false;
+                    requestCodeBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Получить код';
+                }
+            });
+            
+            // Обработка ввода кода
+            codeInputs.forEach((input, index) => {
+                input.addEventListener('input', function(e) {
+                    const value = e.target.value;
+                    
+                    // Очищаем нечисловые символы
+                    if (!/^\d*$/.test(value)) {
+                        e.target.value = '';
+                        return;
+                    }
+                    
+                    if (value) {
+                        e.target.classList.add('filled');
+                        
+                        // Переходим к следующему полю
+                        if (index < codeInputs.length - 1) {
+                            codeInputs[index + 1].focus();
+                        }
+                    } else {
+                        e.target.classList.remove('filled');
+                    }
+                    
+                    // Проверяем, все ли поля заполнены
+                    checkCodeComplete();
+                });
+                
+                input.addEventListener('keydown', function(e) {
+                    // Удаление и переход к предыдущему полю
+                    if (e.key === 'Backspace' && !this.value && index > 0) {
+                        codeInputs[index - 1].focus();
+                    }
+                    
+                    // Стрелки для навигации
+                    if (e.key === 'ArrowLeft' && index > 0) {
+                        codeInputs[index - 1].focus();
+                    }
+                    if (e.key === 'ArrowRight' && index < codeInputs.length - 1) {
+                        codeInputs[index + 1].focus();
+                    }
+                });
+                
+                input.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const pasteData = e.clipboardData.getData('text').trim();
+                    
+                    if (/^\d{6}$/.test(pasteData)) {
+                        pasteData.split('').forEach((char, i) => {
+                            if (codeInputs[i]) {
+                                codeInputs[i].value = char;
+                                codeInputs[i].classList.add('filled');
+                            }
+                        });
+                        checkCodeComplete();
+                        codeInputs[5].focus();
+                    }
+                });
+            });
+            
+            // Проверка заполнения кода
+            function checkCodeComplete() {
+                const code = Array.from(codeInputs)
+                    .map(input => input.value)
+                    .join('');
+                
+                verifyCodeBtn.disabled = code.length !== 6;
+            }
+            
+            // Проверка кода
+            verifyCodeBtn.addEventListener('click', function() {
+                const code = Array.from(codeInputs)
+                    .map(input => input.value)
+                    .join('');
+                
+                showMessage('Проверяем код...', 'info');
+                verifyCodeBtn.disabled = true;
+                verifyCodeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Проверяем...';
+                
+                const result = window.authSystem.verifyCode(code);
+                
+                if (result.success) {
+                    showMessage(result.message, 'success');
+                    
+                    // Перенаправляем в админку через 1 секунду
+                    setTimeout(() => {
+                        window.location.href = 'admin.html';
+                    }, 1000);
+                    
+                } else {
+                    showMessage(result.message, 'error');
+                    verifyCodeBtn.disabled = false;
+                    verifyCodeBtn.innerHTML = '<i class="fas fa-check"></i> Войти';
+                    
+                    // Сбрасываем поля при ошибке
+                    codeInputs.forEach(input => {
+                        input.value = '';
+                        input.classList.remove('filled');
+                    });
+                    codeInputs[0].focus();
+                }
+            });
+            
+            // Таймер
+            function startTimer() {
+                codeExpiryTime = Date.now() + 300000; // 5 минут
+                
+                if (timerInterval) clearInterval(timerInterval);
+                
+                timerInterval = setInterval(updateTimer, 1000);
+                updateTimer();
+            }
+            
+            function updateTimer() {
+                const now = Date.now();
+                const timeLeft = Math.max(0, codeExpiryTime - now);
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    codeTimer.textContent = 'Код устарел';
+                    codeTimer.classList.add('expired');
+                    verifyCodeBtn.disabled = true;
+                    return;
+                }
+                
+                const minutes = Math.floor(timeLeft / 60000);
+                const seconds = Math.floor((timeLeft % 60000) / 1000);
+                
+                codeTimer.textContent = `Код действителен: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                codeTimer.classList.remove('expired');
+            }
+            
+            // Показать сообщение
+            function showMessage(text, type) {
+                loginMessage.textContent = text;
+                loginMessage.className = `message message-${type} show`;
+                
+                setTimeout(() => {
+                    loginMessage.classList.remove('show');
+                }, 5000);
+            }
+            
+            // Разработческий вход (для тестирования)
+            devLoginLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                if (confirm('Войти в режиме разработчика?\n(Только для тестирования)')) {
+                    // Создаем тестовую сессию
+                    window.authSystem.createSession();
+                    window.location.href = 'admin.html';
+                }
+            });
+            
+            // Автофокус на первом поле кода
+            codeInputs[0].focus();
+        });
+    </script>
+</body>
+</html>
