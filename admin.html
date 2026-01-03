@@ -8,81 +8,34 @@
     <!-- Проверка авторизации -->
     <script>
         // Проверяем авторизацию
-        if (sessionStorage.getItem('admin_authenticated') !== 'true') {
-            // Если не авторизован - на страницу входа
+        const isAuthenticated = sessionStorage.getItem('admin_authenticated') === 'true';
+        const loginTime = parseInt(sessionStorage.getItem('admin_login_time') || '0');
+        const currentTime = Date.now();
+        const sessionDuration = 8 * 60 * 60 * 1000; // 8 часов
+        
+        if (!isAuthenticated || (currentTime - loginTime > sessionDuration)) {
+            // Не авторизован или сессия истекла
+            sessionStorage.removeItem('admin_authenticated');
+            sessionStorage.removeItem('admin_login_time');
+            sessionStorage.removeItem('admin_username');
             window.location.href = 'login.html';
         }
         
-        // Проверяем время сессии (8 часов)
-        const loginTime = parseInt(sessionStorage.getItem('admin_login_time') || 0);
-        const currentTime = Date.now();
-        const sessionDuration = 8 * 60 * 60 * 1000; // 8 часов в миллисекундах
-        
-        if (currentTime - loginTime > sessionDuration) {
-            // Сессия истекла
+        // Функция выхода
+        function logout() {
             sessionStorage.removeItem('admin_authenticated');
             sessionStorage.removeItem('admin_login_time');
+            sessionStorage.removeItem('admin_username');
             window.location.href = 'login.html';
         }
     </script>
     
-    <!-- Остальные стили и скрипты -->
-    <link rel="stylesheet" href="style.css">
-    <!-- ... остальной код ... -->
-    <!-- ... существующий head ... -->
-    <script src="auth-system.js"></script>
-    <script>
-        // Проверка авторизации при загрузке
-        document.addEventListener('DOMContentLoaded', function() {
-            if (!window.authSystem || !window.authSystem.isAuthenticated()) {
-                // Если не авторизован, перенаправляем на страницу входа
-                window.location.href = 'auth-login.html';
-                return;
-            }
-            
-            // Показать информацию о сессии
-            const sessionInfo = window.authSystem.getSessionInfo();
-            if (sessionInfo.loggedIn) {
-                console.log('Сессия активна:', sessionInfo);
-            }
-        });
-        
-        // Функция выхода
-        function logout() {
-            if (window.authSystem) {
-                window.authSystem.logout();
-            }
-            window.location.href = 'auth-login.html';
-        }
-    </script>
-</head>
-<body>
-    <!-- В шапке админки добавьте кнопку выхода -->
-    <div class="admin-actions">
-        <a href="index.html" class="header-btn">
-            <i class="fas fa-search"></i> К поисковику
-        </a>
-        <button class="header-btn" onclick="logout()">
-            <i class="fas fa-sign-out-alt"></i> Выйти
-        </button>
-    </div>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SEEN Search - Панель управления</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
+    
     <style>
-        /* Admin Panel Styles */
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
+        /* Admin Panel Specific Styles */
         .admin-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -98,6 +51,19 @@
             background: linear-gradient(135deg, #4285f4, #34a853);
             color: white;
             padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .admin-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: rgba(255,255,255,0.1);
+            transform: rotate(30deg);
         }
         
         .header-top {
@@ -105,6 +71,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
             flex-wrap: wrap;
             gap: 20px;
         }
@@ -127,11 +95,13 @@
         .admin-logo p {
             margin: 5px 0 0 0;
             opacity: 0.9;
+            font-size: 16px;
         }
         
         .admin-actions {
             display: flex;
             gap: 15px;
+            flex-wrap: wrap;
         }
         
         .header-btn {
@@ -146,6 +116,7 @@
             gap: 10px;
             text-decoration: none;
             transition: all 0.3s;
+            font-weight: 500;
         }
         
         .header-btn:hover {
@@ -158,6 +129,8 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
+            position: relative;
+            z-index: 1;
         }
         
         .stat-card {
@@ -186,32 +159,36 @@
         
         /* Navigation */
         .admin-nav {
-            background: #f8f9fa;
+            background: var(--neutral-100);
             display: flex;
             overflow-x: auto;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid var(--neutral-200);
         }
         
         .nav-item {
             padding: 20px 30px;
-            color: #666;
+            color: var(--neutral-600);
             text-decoration: none;
             border-bottom: 3px solid transparent;
-            transition: all 0.3s;
+            transition: all var(--transition-normal);
             display: flex;
             align-items: center;
             gap: 10px;
             white-space: nowrap;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 16px;
         }
         
         .nav-item:hover {
             background: rgba(66, 133, 244, 0.05);
-            color: #4285f4;
+            color: var(--primary-blue);
         }
         
         .nav-item.active {
-            color: #4285f4;
-            border-bottom-color: #4285f4;
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
             background: rgba(66, 133, 244, 0.1);
         }
         
@@ -230,18 +207,13 @@
             animation: fadeIn 0.3s ease;
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
         .section-header {
             margin-bottom: 30px;
         }
         
         .section-header h2 {
-            font-size: 28px;
-            color: #333;
+            font-size: var(--font-size-2xl);
+            color: var(--neutral-900);
             margin-bottom: 10px;
             display: flex;
             align-items: center;
@@ -249,8 +221,8 @@
         }
         
         .section-header p {
-            color: #666;
-            font-size: 18px;
+            color: var(--neutral-600);
+            font-size: var(--font-size-lg);
         }
         
         /* Dashboard */
@@ -263,10 +235,10 @@
         
         .dashboard-card {
             background: white;
-            border-radius: 15px;
+            border-radius: var(--radius-lg);
             padding: 25px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            border: 1px solid #e0e0e0;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--neutral-200);
         }
         
         .card-header {
@@ -277,29 +249,36 @@
         }
         
         .card-title {
-            font-size: 20px;
+            font-size: var(--font-size-xl);
             font-weight: 600;
-            color: #333;
+            color: var(--neutral-900);
         }
         
         .card-icon {
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, #4285f4, #34a853);
-            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-green));
+            border-radius: var(--radius-lg);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 24px;
+            font-size: var(--font-size-xl);
+        }
+        
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
         
         /* Forms */
         .site-form {
             background: white;
-            border-radius: 15px;
+            border-radius: var(--radius-lg);
             padding: 30px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--neutral-200);
         }
         
         .form-grid {
@@ -317,21 +296,21 @@
             display: block;
             margin-bottom: 10px;
             font-weight: 500;
-            color: #333;
+            color: var(--neutral-800);
         }
         
         .form-input, .form-textarea, .form-select {
             width: 100%;
             padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s;
+            border: 2px solid var(--neutral-300);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-base);
+            transition: all var(--transition-normal);
         }
         
         .form-input:focus, .form-textarea:focus, .form-select:focus {
             outline: none;
-            border-color: #4285f4;
+            border-color: var(--primary-blue);
             box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
         }
         
@@ -350,43 +329,44 @@
         .btn {
             padding: 15px 30px;
             border: none;
-            border-radius: 10px;
-            font-size: 16px;
+            border-radius: var(--radius-lg);
+            font-size: var(--font-size-base);
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all var(--transition-normal);
             display: flex;
             align-items: center;
             gap: 10px;
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #4285f4, #34a853);
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-green));
             color: white;
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(66, 133, 244, 0.4);
+            box-shadow: var(--shadow-md);
         }
         
         .btn-secondary {
-            background: #f8f9fa;
-            color: #666;
-            border: 2px solid #e0e0e0;
+            background: var(--neutral-100);
+            color: var(--neutral-700);
+            border: 2px solid var(--neutral-300);
         }
         
         .btn-secondary:hover {
-            background: #e9ecef;
+            background: var(--neutral-200);
         }
         
         .btn-danger {
-            background: #ea4335;
+            background: var(--primary-red);
             color: white;
         }
         
         .btn-danger:hover {
             background: #d32f2f;
+            transform: translateY(-2px);
         }
         
         /* Sites List */
@@ -410,208 +390,133 @@
             left: 15px;
             top: 50%;
             transform: translateY(-50%);
-            color: #999;
+            color: var(--neutral-500);
         }
         
         .search-box input {
             width: 100%;
             padding: 15px 15px 15px 45px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
+            border: 2px solid var(--neutral-300);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-base);
         }
         
-        .sites-list {
+        /* Category Tags */
+        .category-tags {
             display: flex;
-            flex-direction: column;
-            gap: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
         }
         
-        .site-item {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            border: 1px solid #e0e0e0;
-            transition: all 0.3s;
-        }
-        
-        .site-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-        }
-        
-        .site-info h3 {
-            font-size: 20px;
-            color: #1a0dab;
-            margin-bottom: 10px;
-        }
-        
-        .site-url {
-            color: #006621;
-            font-size: 14px;
-            margin-bottom: 15px;
-            word-break: break-all;
+        .category-tag {
+            padding: 8px 16px;
+            background: var(--accent-light-blue);
+            color: var(--primary-blue);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
             display: flex;
             align-items: center;
             gap: 8px;
         }
         
-        .site-description {
-            color: #545454;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-        
-        .site-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-        
-        .site-meta span {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .site-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-        
-        .action-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
+        .category-tag .count {
+            background: var(--primary-blue);
             color: white;
-        }
-        
-        .edit-btn {
-            background: #ffc107;
-        }
-        
-        .edit-btn:hover {
-            background: #e0a800;
-        }
-        
-        .delete-btn {
-            background: #dc3545;
-        }
-        
-        .delete-btn:hover {
-            background: #c82333;
-        }
-        
-        /* Messages */
-        .message {
-            display: none;
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-        }
-        
-        .message.show {
-            display: block;
-            animation: slideIn 0.3s ease;
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        .message-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .message-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #666;
-        }
-        
-        .empty-state i {
-            font-size: 48px;
-            color: #dadce0;
-            margin-bottom: 20px;
-        }
-        
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 2000;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            font-size: var(--font-size-xs);
         }
         
-        .modal.show {
+        /* Stats Chart */
+        .stats-chart {
+            margin-top: 20px;
+        }
+        
+        .chart-row {
             display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 15px;
         }
         
-        .modal-content {
-            background: white;
-            border-radius: 20px;
-            max-width: 600px;
-            width: 100%;
-            animation: modalSlide 0.3s ease;
+        .chart-label {
+            min-width: 150px;
+            color: var(--neutral-600);
         }
         
-        @keyframes modalSlide {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .chart-bar {
+            flex: 1;
+            height: 20px;
+            background: var(--neutral-200);
+            border-radius: var(--radius-full);
+            overflow: hidden;
         }
         
+        .chart-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-blue), var(--primary-green));
+            border-radius: var(--radius-full);
+            transition: width 1s ease;
+        }
+        
+        .chart-value {
+            min-width: 40px;
+            font-weight: 600;
+            color: var(--neutral-800);
+        }
+        
+        .chart-date {
+            text-align: center;
+            color: var(--neutral-500);
+            font-size: var(--font-size-sm);
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid var(--neutral-200);
+        }
+        
+        /* System Info */
+        .system-info {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--neutral-200);
+        }
+        
+        .info-label {
+            font-weight: 500;
+            color: var(--neutral-600);
+        }
+        
+        .info-value {
+            color: var(--neutral-800);
+            font-weight: 600;
+        }
+        
+        /* Modal Fixes */
         .modal-header {
             padding: 25px 30px 20px;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid var(--neutral-200);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         
         .modal-title {
-            font-size: 24px;
+            font-size: var(--font-size-xl);
             font-weight: 600;
-            color: #333;
+            color: var(--neutral-900);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -620,8 +525,8 @@
         .close-modal {
             background: none;
             border: none;
-            font-size: 28px;
-            color: #666;
+            font-size: var(--font-size-2xl);
+            color: var(--neutral-600);
             cursor: pointer;
             width: 40px;
             height: 40px;
@@ -632,44 +537,17 @@
         }
         
         .close-modal:hover {
-            background: #f5f5f5;
-        }
-        
-        .modal-body {
-            padding: 30px;
-        }
-        
-        .modal-footer {
-            padding: 20px 30px;
-            border-top: 1px solid #e0e0e0;
-            display: flex;
-            justify-content: flex-end;
-            gap: 15px;
+            background: var(--neutral-100);
         }
         
         /* Responsive */
-        @media (max-width: 1024px) {
+        @media (max-width: 768px) {
             .admin-main {
                 padding: 20px;
             }
             
             .dashboard-grid {
                 grid-template-columns: 1fr;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            
-            .admin-container {
-                min-height: calc(100vh - 20px);
-                border-radius: 10px;
-            }
-            
-            .admin-header {
-                padding: 20px;
             }
             
             .header-top {
@@ -685,6 +563,7 @@
                 flex: 1;
                 min-width: 150px;
                 justify-content: center;
+                padding: 15px 20px;
             }
             
             .sites-header {
@@ -708,10 +587,6 @@
                 width: 100%;
                 justify-content: center;
             }
-            
-            .modal-content {
-                margin: 10px;
-            }
         }
     </style>
 </head>
@@ -731,8 +606,8 @@
                     <a href="index.html" class="header-btn">
                         <i class="fas fa-search"></i> К поисковику
                     </a>
-                    <button class="header-btn" onclick="location.reload()">
-                        <i class="fas fa-sync-alt"></i> Обновить
+                    <button class="header-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Выйти
                     </button>
                 </div>
             </div>
@@ -742,7 +617,7 @@
                     <div class="stat-icon">
                         <i class="fas fa-globe"></i>
                     </div>
-                    <div class="stat-value" id="totalSites">8</div>
+                    <div class="stat-value" id="totalSites">0</div>
                     <div class="stat-label">Всего сайтов</div>
                 </div>
                 <div class="stat-card">
@@ -756,7 +631,7 @@
                     <div class="stat-icon">
                         <i class="fas fa-database"></i>
                     </div>
-                    <div class="stat-value" id="dbSize">2.5 KB</div>
+                    <div class="stat-value" id="dbSize">0 KB</div>
                     <div class="stat-label">Размер базы</div>
                 </div>
             </div>
@@ -764,18 +639,18 @@
         
         <!-- Navigation -->
         <nav class="admin-nav">
-            <a href="#dashboard" class="nav-item active" data-section="dashboard">
+            <button class="nav-item active" data-section="dashboard">
                 <i class="fas fa-tachometer-alt"></i> Дашборд
-            </a>
-            <a href="#add-site" class="nav-item" data-section="add-site">
+            </button>
+            <button class="nav-item" data-section="add-site">
                 <i class="fas fa-plus-circle"></i> Добавить сайт
-            </a>
-            <a href="#manage-sites" class="nav-item" data-section="manage-sites">
+            </button>
+            <button class="nav-item" data-section="manage-sites">
                 <i class="fas fa-list"></i> Управление сайтами
-            </a>
-            <a href="#settings" class="nav-item" data-section="settings">
+            </button>
+            <button class="nav-item" data-section="settings">
                 <i class="fas fa-sliders-h"></i> Настройки
-            </a>
+            </button>
         </nav>
         
         <!-- Main Content -->
@@ -805,12 +680,15 @@
                             <button class="btn btn-secondary" onclick="refreshData()">
                                 <i class="fas fa-sync-alt"></i> Обновить данные
                             </button>
+                            <button class="btn btn-secondary" onclick="exportData()">
+                                <i class="fas fa-download"></i> Экспорт данных
+                            </button>
                         </div>
                     </div>
                     
                     <div class="dashboard-card">
                         <div class="card-header">
-                            <h3 class="card-title">Статистика</h3>
+                            <h3 class="card-title">Статистика сайтов</h3>
                             <div class="card-icon">
                                 <i class="fas fa-chart-bar"></i>
                             </div>
@@ -818,6 +696,30 @@
                         <div id="statsContent">
                             <p>Загрузка статистики...</p>
                         </div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Категории</h3>
+                            <div class="card-icon">
+                                <i class="fas fa-tags"></i>
+                            </div>
+                        </div>
+                        <div id="categoryTags">
+                            <!-- Категории загрузятся через JS -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3 class="card-title">График статистики</h3>
+                        <div class="card-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                    <div id="todayStats">
+                        <!-- График загрузятся через JS -->
                     </div>
                 </div>
             </section>
@@ -835,12 +737,14 @@
                             <label for="siteTitle" class="form-label">Название сайта *</label>
                             <input type="text" id="siteTitle" class="form-input" 
                                    placeholder="Введите название сайта" required>
+                            <div class="form-hint">Будет отображаться в результатах поиска</div>
                         </div>
                         
                         <div class="form-group">
                             <label for="siteUrl" class="form-label">URL сайта *</label>
                             <input type="url" id="siteUrl" class="form-input" 
                                    placeholder="https://example.com" required>
+                            <div class="form-hint">Должен начинаться с http:// или https://</div>
                         </div>
                     </div>
                     
@@ -848,6 +752,7 @@
                         <label for="siteDescription" class="form-label">Описание *</label>
                         <textarea id="siteDescription" class="form-textarea" 
                                   placeholder="Подробное описание сайта" required></textarea>
+                        <div class="form-hint">Будет использоваться для поиска</div>
                     </div>
                     
                     <div class="form-grid">
@@ -855,6 +760,7 @@
                             <label for="siteKeywords" class="form-label">Ключевые слова</label>
                             <input type="text" id="siteKeywords" class="form-input" 
                                    placeholder="через запятую">
+                            <div class="form-hint">Например: технологии, IT, программирование</div>
                         </div>
                         
                         <div class="form-group">
@@ -862,6 +768,7 @@
                             <select id="siteCategory" class="form-select">
                                 <option value="">Выберите категорию</option>
                             </select>
+                            <div class="form-hint">Упрощает поиск по категориям</div>
                         </div>
                     </div>
                     
@@ -899,8 +806,12 @@
                     </div>
                 </div>
                 
-                <div class="sites-list" id="sitesList">
+                <div class="sites-list" id="sitesListContainer">
                     <!-- Sites will be loaded here -->
+                    <div class="empty-state">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <h3>Загрузка сайтов...</h3>
+                    </div>
                 </div>
             </section>
             
@@ -951,6 +862,34 @@
                         </div>
                     </div>
                 </div>
+                
+                <div class="dashboard-card" style="margin-top: 25px;">
+                    <div class="card-header">
+                        <h3 class="card-title">Информация о системе</h3>
+                        <div class="card-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="system-info">
+                        <div class="info-item">
+                            <span class="info-label">Версия системы:</span>
+                            <span class="info-value">2.0</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Всего сайтов:</span>
+                            <span class="info-value" id="systemSiteCount">0</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Авторизован как:</span>
+                            <span class="info-value" id="adminUsername">Администратор</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Время сессии:</span>
+                            <span class="info-value" id="sessionTime">0 минут</span>
+                        </div>
+                    </div>
+                </div>
             </section>
         </main>
     </div>
@@ -981,16 +920,25 @@
                         <textarea id="editSiteDescription" class="form-textarea" required></textarea>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="editSiteKeywords" class="form-label">Ключевые слова</label>
-                        <input type="text" id="editSiteKeywords" class="form-input">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="editSiteKeywords" class="form-label">Ключевые слова</label>
+                            <input type="text" id="editSiteKeywords" class="form-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editSiteCategory" class="form-label">Категория</label>
+                            <select id="editSiteCategory" class="form-select">
+                                <option value="">Выберите категорию</option>
+                            </select>
+                        </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="editSiteCategory" class="form-label">Категория</label>
-                        <select id="editSiteCategory" class="form-select">
-                            <option value="">Выберите категорию</option>
-                        </select>
+                        <label class="form-label">
+                            <input type="checkbox" id="editSiteActive" checked>
+                            Активный (отображается в поиске)
+                        </label>
                     </div>
                 </form>
             </div>
@@ -1013,10 +961,13 @@
             <div class="modal-body">
                 <p>Вы уверены, что хотите удалить этот сайт?</p>
                 <p><strong>Это действие нельзя отменить.</strong></p>
+                <input type="hidden" id="deleteSiteId">
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="hideModal('deleteConfirmModal')">Отмена</button>
-                <button class="btn btn-danger" id="confirmDeleteBtn">Удалить</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn" onclick="confirmDelete()">
+                    Удалить
+                </button>
             </div>
         </div>
     </div>
@@ -1052,15 +1003,50 @@
         }
         
         function showModal(modalId) {
-            document.getElementById(modalId).classList.add('show');
+            document.getElementById(modalId).style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById(modalId).classList.add('show');
+            }, 10);
         }
         
         function hideModal(modalId) {
             document.getElementById(modalId).classList.remove('show');
+            setTimeout(() => {
+                document.getElementById(modalId).style.display = 'none';
+            }, 300);
         }
         
-        // Обработчики навигации
+        // Обновляем информацию о пользователе
         document.addEventListener('DOMContentLoaded', function() {
+            const username = sessionStorage.getItem('admin_username') || 'Koshelev_console_923100';
+            const loginTime = parseInt(sessionStorage.getItem('admin_login_time') || '0');
+            
+            // Показываем имя пользователя
+            const usernameElement = document.getElementById('adminUsername');
+            if (usernameElement) {
+                usernameElement.textContent = username;
+            }
+            
+            // Обновляем время сессии
+            function updateSessionTime() {
+                const sessionTimeElement = document.getElementById('sessionTime');
+                if (sessionTimeElement && loginTime > 0) {
+                    const currentTime = Date.now();
+                    const minutes = Math.floor((currentTime - loginTime) / (1000 * 60));
+                    const hours = Math.floor(minutes / 60);
+                    const remainingMinutes = minutes % 60;
+                    
+                    if (hours > 0) {
+                        sessionTimeElement.textContent = `${hours} ч. ${remainingMinutes} мин.`;
+                    } else {
+                        sessionTimeElement.textContent = `${minutes} мин.`;
+                    }
+                }
+            }
+            
+            updateSessionTime();
+            setInterval(updateSessionTime, 60000); // Обновляем каждую минуту
+            
             // Навигация
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.addEventListener('click', function(e) {
@@ -1074,6 +1060,9 @@
             document.querySelectorAll('.close-modal').forEach(btn => {
                 btn.addEventListener('click', function() {
                     this.closest('.modal').classList.remove('show');
+                    setTimeout(() => {
+                        this.closest('.modal').style.display = 'none';
+                    }, 300);
                 });
             });
             
@@ -1082,11 +1071,14 @@
                 modal.addEventListener('click', function(e) {
                     if (e.target === this) {
                         this.classList.remove('show');
+                        setTimeout(() => {
+                            this.style.display = 'none';
+                        }, 300);
                     }
                 });
             });
             
-            // Заполнить категории
+            // Инициализация категорий
             setTimeout(() => {
                 const categories = window.dataManager?.categories || [
                     'Технологии', 'Наука', 'Образование', 'Новости', 
@@ -1096,6 +1088,11 @@
                 ['siteCategory', 'editSiteCategory'].forEach(selectId => {
                     const select = document.getElementById(selectId);
                     if (select) {
+                        // Очищаем существующие опции кроме первой
+                        while (select.options.length > 1) {
+                            select.remove(1);
+                        }
+                        
                         categories.forEach(category => {
                             const option = document.createElement('option');
                             option.value = category;
@@ -1119,7 +1116,14 @@
         }
         
         function saveSettings() {
-            alert('Настройки сохранены!');
+            const messageElement = document.getElementById('adminMessage');
+            if (messageElement) {
+                messageElement.textContent = 'Настройки сохранены!';
+                messageElement.className = 'message message-success show';
+                setTimeout(() => {
+                    messageElement.className = 'message';
+                }, 3000);
+            }
         }
         
         function resetAllData() {
@@ -1132,6 +1136,27 @@
             }
         }
         
+        function exportData() {
+            if (window.dataManager && window.dataManager.exportData) {
+                const data = window.dataManager.exportData('json');
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'seen-search-data.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+        
+        function confirmDelete() {
+            const siteId = document.getElementById('deleteSiteId').value;
+            if (siteId && window.deleteSite) {
+                window.deleteSite(parseInt(siteId));
+                hideModal('deleteConfirmModal');
+            }
+        }
+        
         // Глобальные функции
         window.showSection = showSection;
         window.showModal = showModal;
@@ -1140,6 +1165,9 @@
         window.refreshSites = refreshSites;
         window.saveSettings = saveSettings;
         window.resetAllData = resetAllData;
+        window.exportData = exportData;
+        window.logout = logout;
+        window.confirmDelete = confirmDelete;
     </script>
 </body>
 </html>
