@@ -7,10 +7,652 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
+    <style>
+        /* Admin Panel Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            min-height: calc(100vh - 40px);
+        }
+        
+        /* Header */
+        .admin-header {
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            color: white;
+            padding: 30px;
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .admin-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .admin-logo i {
+            font-size: 32px;
+        }
+        
+        .admin-logo h1 {
+            font-size: 28px;
+            margin: 0;
+        }
+        
+        .admin-logo p {
+            margin: 5px 0 0 0;
+            opacity: 0.9;
+        }
+        
+        .admin-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .header-btn {
+            padding: 12px 25px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .header-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* Stats */
+        .header-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-icon {
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        /* Navigation */
+        .admin-nav {
+            background: #f8f9fa;
+            display: flex;
+            overflow-x: auto;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .nav-item {
+            padding: 20px 30px;
+            color: #666;
+            text-decoration: none;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+        }
+        
+        .nav-item:hover {
+            background: rgba(66, 133, 244, 0.05);
+            color: #4285f4;
+        }
+        
+        .nav-item.active {
+            color: #4285f4;
+            border-bottom-color: #4285f4;
+            background: rgba(66, 133, 244, 0.1);
+        }
+        
+        /* Main Content */
+        .admin-main {
+            padding: 30px;
+            min-height: 500px;
+        }
+        
+        .admin-section {
+            display: none;
+        }
+        
+        .admin-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .section-header {
+            margin-bottom: 30px;
+        }
+        
+        .section-header h2 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .section-header p {
+            color: #666;
+            font-size: 18px;
+        }
+        
+        /* Dashboard */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .dashboard-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+        
+        /* Forms */
+        .site-form {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: #4285f4;
+            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
+        }
+        
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(66, 133, 244, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #666;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+        
+        .btn-danger {
+            background: #ea4335;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+        
+        /* Sites List */
+        .sites-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        
+        .sites-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .site-item {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+        
+        .site-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        
+        .site-info h3 {
+            font-size: 20px;
+            color: #1a0dab;
+            margin-bottom: 10px;
+        }
+        
+        .site-url {
+            color: #006621;
+            font-size: 14px;
+            margin-bottom: 15px;
+            word-break: break-all;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .site-description {
+            color: #545454;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .site-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .site-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .site-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            color: white;
+        }
+        
+        .edit-btn {
+            background: #ffc107;
+        }
+        
+        .edit-btn:hover {
+            background: #e0a800;
+        }
+        
+        .delete-btn {
+            background: #dc3545;
+        }
+        
+        .delete-btn:hover {
+            background: #c82333;
+        }
+        
+        /* Messages */
+        .message {
+            display: none;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .message.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .message-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .message-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            color: #dadce0;
+            margin-bottom: 20px;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            animation: modalSlide 0.3s ease;
+        }
+        
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            padding: 25px 30px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #666;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .close-modal:hover {
+            background: #f5f5f5;
+        }
+        
+        .modal-body {
+            padding: 30px;
+        }
+        
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .admin-main {
+                padding: 20px;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .admin-container {
+                min-height: calc(100vh - 20px);
+                border-radius: 10px;
+            }
+            
+            .admin-header {
+                padding: 20px;
+            }
+            
+            .header-top {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .admin-nav {
+                flex-wrap: wrap;
+            }
+            
+            .nav-item {
+                flex: 1;
+                min-width: 150px;
+                justify-content: center;
+            }
+            
+            .sites-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                max-width: 100%;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .modal-content {
+                margin: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="admin-container">
-        <!-- Шапка -->
+        <!-- Header -->
         <header class="admin-header">
             <div class="header-top">
                 <div class="admin-logo">
@@ -24,15 +666,38 @@
                     <a href="index.html" class="header-btn">
                         <i class="fas fa-search"></i> К поисковику
                     </a>
+                    <button class="header-btn" onclick="location.reload()">
+                        <i class="fas fa-sync-alt"></i> Обновить
+                    </button>
                 </div>
             </div>
             
             <div class="header-stats" id="headerStats">
-                <!-- Заполняется JavaScript -->
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div class="stat-value" id="totalSites">8</div>
+                    <div class="stat-label">Всего сайтов</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                    <div class="stat-value" id="todayAdded">0</div>
+                    <div class="stat-label">Добавлено сегодня</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div class="stat-value" id="dbSize">2.5 KB</div>
+                    <div class="stat-label">Размер базы</div>
+                </div>
             </div>
         </header>
         
-        <!-- Навигация -->
+        <!-- Navigation -->
         <nav class="admin-nav">
             <a href="#dashboard" class="nav-item active" data-section="dashboard">
                 <i class="fas fa-tachometer-alt"></i> Дашборд
@@ -43,14 +708,17 @@
             <a href="#manage-sites" class="nav-item" data-section="manage-sites">
                 <i class="fas fa-list"></i> Управление сайтами
             </a>
+            <a href="#settings" class="nav-item" data-section="settings">
+                <i class="fas fa-sliders-h"></i> Настройки
+            </a>
         </nav>
         
-        <!-- Основной контент -->
+        <!-- Main Content -->
         <main class="admin-main">
-            <!-- Сообщения -->
+            <!-- Message Area -->
             <div class="message" id="adminMessage"></div>
             
-            <!-- Дашборд -->
+            <!-- Dashboard -->
             <section id="dashboard" class="admin-section active">
                 <div class="section-header">
                     <h2><i class="fas fa-tachometer-alt"></i> Дашборд</h2>
@@ -77,54 +745,19 @@
                     
                     <div class="dashboard-card">
                         <div class="card-header">
-                            <h3 class="card-title">Категории сайтов</h3>
+                            <h3 class="card-title">Статистика</h3>
                             <div class="card-icon">
-                                <i class="fas fa-tags"></i>
+                                <i class="fas fa-chart-bar"></i>
                             </div>
                         </div>
-                        <div class="category-tags" id="categoryTags">
-                            <!-- Заполняется JavaScript -->
+                        <div id="statsContent">
+                            <p>Загрузка статистики...</p>
                         </div>
-                    </div>
-                    
-                    <div class="dashboard-card">
-                        <div class="card-header">
-                            <h3 class="card-title">Системная информация</h3>
-                            <div class="card-icon">
-                                <i class="fas fa-info-circle"></i>
-                            </div>
-                        </div>
-                        <div class="system-info">
-                            <div class="info-item">
-                                <span class="info-label">Версия системы:</span>
-                                <span class="info-value">2.0</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Последнее обновление:</span>
-                                <span class="info-value" id="lastUpdateTime">Сегодня</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Поддержка:</span>
-                                <span class="info-value">sessionStorage</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <h3 class="card-title">Статистика за сегодня</h3>
-                        <div class="card-icon">
-                            <i class="fas fa-chart-bar"></i>
-                        </div>
-                    </div>
-                    <div class="today-stats" id="todayStats">
-                        <!-- Заполняется JavaScript -->
                     </div>
                 </div>
             </section>
             
-            <!-- Добавить сайт -->
+            <!-- Add Site -->
             <section id="add-site" class="admin-section">
                 <div class="section-header">
                     <h2><i class="fas fa-plus-circle"></i> Добавить новый сайт</h2>
@@ -134,25 +767,22 @@
                 <form id="addSiteForm" class="site-form">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="siteTitle" class="form-label required">Название сайта *</label>
+                            <label for="siteTitle" class="form-label">Название сайта *</label>
                             <input type="text" id="siteTitle" class="form-input" 
                                    placeholder="Введите название сайта" required>
-                            <div class="form-hint">Будет отображаться в результатах поиска</div>
                         </div>
                         
                         <div class="form-group">
-                            <label for="siteUrl" class="form-label required">URL сайта *</label>
+                            <label for="siteUrl" class="form-label">URL сайта *</label>
                             <input type="url" id="siteUrl" class="form-input" 
                                    placeholder="https://example.com" required>
-                            <div class="form-hint">Должен начинаться с http:// или https://</div>
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="siteDescription" class="form-label required">Описание *</label>
+                        <label for="siteDescription" class="form-label">Описание *</label>
                         <textarea id="siteDescription" class="form-textarea" 
                                   placeholder="Подробное описание сайта" required></textarea>
-                        <div class="form-hint">Будет использоваться для поиска</div>
                     </div>
                     
                     <div class="form-grid">
@@ -160,7 +790,6 @@
                             <label for="siteKeywords" class="form-label">Ключевые слова</label>
                             <input type="text" id="siteKeywords" class="form-input" 
                                    placeholder="через запятую">
-                            <div class="form-hint">Например: технологии, IT, программирование</div>
                         </div>
                         
                         <div class="form-group">
@@ -168,7 +797,6 @@
                             <select id="siteCategory" class="form-select">
                                 <option value="">Выберите категорию</option>
                             </select>
-                            <div class="form-hint">Упрощает поиск по категориям</div>
                         </div>
                     </div>
                     
@@ -176,14 +804,14 @@
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i> Добавить сайт
                         </button>
-                        <button type="reset" class="btn btn-secondary" id="resetForm">
-                            <i class="fas fa-times"></i> Очистить форму
+                        <button type="reset" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Очистить
                         </button>
                     </div>
                 </form>
             </section>
             
-            <!-- Управление сайтами -->
+            <!-- Manage Sites -->
             <section id="manage-sites" class="admin-section">
                 <div class="section-header">
                     <h2><i class="fas fa-list"></i> Управление сайтами</h2>
@@ -206,145 +834,247 @@
                     </div>
                 </div>
                 
-                <div class="sites-list" id="sitesListContainer">
-                    <!-- Заполняется JavaScript -->
+                <div class="sites-list" id="sitesList">
+                    <!-- Sites will be loaded here -->
+                </div>
+            </section>
+            
+            <!-- Settings -->
+            <section id="settings" class="admin-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-sliders-h"></i> Настройки системы</h2>
+                    <p>Настройка параметров поисковой системы</p>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Основные настройки</h3>
+                        <div class="card-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-form">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <input type="checkbox" id="enableSuggestions" checked>
+                                Показывать подсказки при поиске
+                            </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <input type="checkbox" id="highlightResults" checked>
+                                Подсвечивать найденные слова
+                            </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <input type="checkbox" id="showMeta" checked>
+                                Показывать мета-информацию
+                            </label>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button class="btn btn-primary" onclick="saveSettings()">
+                                <i class="fas fa-save"></i> Сохранить настройки
+                            </button>
+                            <button class="btn btn-danger" onclick="resetAllData()">
+                                <i class="fas fa-redo"></i> Сбросить все данные
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>
     </div>
-    
-    <!-- Модальное окно редактирования сайта -->
+
+    <!-- Edit Modal -->
     <div id="editSiteModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-edit"></i> Редактировать сайт</h3>
-                <button class="close-modal" onclick="hideModal('editSiteModal')">&times;</button>
+                <button class="close-modal">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="editSiteForm">
                     <input type="hidden" id="editSiteId">
                     
                     <div class="form-group">
-                        <label for="editSiteTitle" class="form-label required">Название сайта</label>
+                        <label for="editSiteTitle" class="form-label">Название сайта</label>
                         <input type="text" id="editSiteTitle" class="form-input" required>
                     </div>
                     
                     <div class="form-group">
-                        <label for="editSiteUrl" class="form-label required">URL сайта</label>
+                        <label for="editSiteUrl" class="form-label">URL сайта</label>
                         <input type="url" id="editSiteUrl" class="form-input" required>
                     </div>
                     
                     <div class="form-group">
-                        <label for="editSiteDescription" class="form-label required">Описание</label>
+                        <label for="editSiteDescription" class="form-label">Описание</label>
                         <textarea id="editSiteDescription" class="form-textarea" required></textarea>
                     </div>
                     
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="editSiteKeywords" class="form-label">Ключевые слова</label>
-                            <input type="text" id="editSiteKeywords" class="form-input">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="editSiteCategory" class="form-label">Категория</label>
-                            <select id="editSiteCategory" class="form-select">
-                                <option value="">Выберите категорию</option>
-                            </select>
-                        </div>
+                    <div class="form-group">
+                        <label for="editSiteKeywords" class="form-label">Ключевые слова</label>
+                        <input type="text" id="editSiteKeywords" class="form-input">
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">
-                            <input type="checkbox" id="editSiteActive" checked>
-                            Активный (отображается в поиске)
-                        </label>
+                        <label for="editSiteCategory" class="form-label">Категория</label>
+                        <select id="editSiteCategory" class="form-select">
+                            <option value="">Выберите категорию</option>
+                        </select>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="hideModal('editSiteModal')">Отмена</button>
                 <button class="btn btn-primary" onclick="saveEditedSite()">
-                    <i class="fas fa-save"></i> Сохранить изменения
-                </button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Модальное окно подтверждения удаления -->
-    <div id="deleteConfirmModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title"><i class="fas fa-exclamation-triangle"></i> Подтверждение удаления</h3>
-                <button class="close-modal" onclick="hideModal('deleteConfirmModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p id="deleteConfirmText">Вы уверены, что хотите удалить этот сайт?</p>
-                <p class="warning-text">
-                    <i class="fas fa-exclamation-circle"></i>
-                    Это действие нельзя отменить.
-                </p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="hideModal('deleteConfirmModal')">Отмена</button>
-                <button class="btn btn-danger" id="confirmDeleteBtn">
-                    <i class="fas fa-trash"></i> Удалить
+                    <i class="fas fa-save"></i> Сохранить
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Скрипты -->
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteConfirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-exclamation-triangle"></i> Подтверждение</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Вы уверены, что хотите удалить этот сайт?</p>
+                <p><strong>Это действие нельзя отменить.</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="hideModal('deleteConfirmModal')">Отмена</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn">Удалить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script src="data-manager-fixed.js"></script>
     <script src="admin-fixed.js"></script>
     
     <script>
-        // Глобальные функции для модальных окон
-        function showModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.style.display = 'flex';
+        // Глобальные функции для навигации
+        function showSection(sectionId) {
+            // Скрыть все секции
+            document.querySelectorAll('.admin-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Убрать активность у всех пунктов меню
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Показать выбранную секцию
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                
+                // Активировать пункт меню
+                const targetLink = document.querySelector(`.nav-item[data-section="${sectionId}"]`);
+                if (targetLink) {
+                    targetLink.classList.add('active');
+                }
             }
+        }
+        
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
         }
         
         function hideModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.style.display = 'none';
-            }
+            document.getElementById(modalId).classList.remove('show');
         }
         
-        // Обработчики модальных окон
+        // Обработчики навигации
         document.addEventListener('DOMContentLoaded', function() {
-            // Закрытие при клике вне окна
+            // Навигация
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const sectionId = this.getAttribute('data-section');
+                    showSection(sectionId);
+                });
+            });
+            
+            // Закрытие модальных окон
+            document.querySelectorAll('.close-modal').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.closest('.modal').classList.remove('show');
+                });
+            });
+            
+            // Закрытие по клику вне окна
             document.querySelectorAll('.modal').forEach(modal => {
                 modal.addEventListener('click', function(e) {
                     if (e.target === this) {
-                        hideModal(this.id);
+                        this.classList.remove('show');
                     }
                 });
             });
             
-            // Обновление времени
-            const updateTime = document.getElementById('lastUpdateTime');
-            if (updateTime) {
-                const now = new Date();
-                updateTime.textContent = now.toLocaleString('ru-RU', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
+            // Заполнить категории
+            setTimeout(() => {
+                const categories = window.dataManager?.categories || [
+                    'Технологии', 'Наука', 'Образование', 'Новости', 
+                    'Развлечения', 'Бизнес', 'Здоровье', 'Путешествия', 'Другое'
+                ];
+                
+                ['siteCategory', 'editSiteCategory'].forEach(selectId => {
+                    const select = document.getElementById(selectId);
+                    if (select) {
+                        categories.forEach(category => {
+                            const option = document.createElement('option');
+                            option.value = category;
+                            option.textContent = category;
+                            select.appendChild(option);
+                        });
+                    }
                 });
-            }
-            
-            // Кнопка очистки формы
-            const resetBtn = document.getElementById('resetForm');
-            if (resetBtn) {
-                resetBtn.addEventListener('click', function() {
-                    document.getElementById('addSiteForm').reset();
-                });
-            }
+            }, 100);
         });
+        
+        // Функции для кнопок
+        function refreshData() {
+            location.reload();
+        }
+        
+        function refreshSites() {
+            if (typeof window.loadSitesList === 'function') {
+                window.loadSitesList();
+            }
+        }
+        
+        function saveSettings() {
+            alert('Настройки сохранены!');
+        }
+        
+        function resetAllData() {
+            if (confirm('ВНИМАНИЕ! Это удалит все данные и загрузит демо-версию. Продолжить?')) {
+                if (window.dataManager && window.dataManager.resetData) {
+                    window.dataManager.resetData();
+                    alert('Данные сброшены! Страница будет перезагружена.');
+                    location.reload();
+                }
+            }
+        }
+        
+        // Глобальные функции
+        window.showSection = showSection;
+        window.showModal = showModal;
+        window.hideModal = hideModal;
+        window.refreshData = refreshData;
+        window.refreshSites = refreshSites;
+        window.saveSettings = saveSettings;
+        window.resetAllData = resetAllData;
     </script>
 </body>
 </html>
