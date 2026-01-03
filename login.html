@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SEEN Search - Авторизация</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -199,14 +200,29 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-    
     <script>
         // Конфигурация доступа
         const ADMIN_CREDENTIALS = {
             login: 'Koshelev_console_923100',
             password: 'Salam(228228'
         };
+        
+        // Проверка если уже авторизован
+        document.addEventListener('DOMContentLoaded', function() {
+            const isAuthenticated = sessionStorage.getItem('admin_authenticated') === 'true';
+            const loginTime = parseInt(sessionStorage.getItem('admin_login_time') || '0');
+            const currentTime = Date.now();
+            const sessionDuration = 8 * 60 * 60 * 1000; // 8 часов
+            
+            if (isAuthenticated && (currentTime - loginTime < sessionDuration)) {
+                // Если уже авторизован и сессия не истекла - сразу в админку
+                window.location.href = 'admin.html';
+            } else {
+                // Очищаем старую сессию
+                sessionStorage.removeItem('admin_authenticated');
+                sessionStorage.removeItem('admin_login_time');
+            }
+        });
         
         // Обработка формы входа
         document.getElementById('loginForm').addEventListener('submit', function(e) {
@@ -223,7 +239,8 @@
             if (username === ADMIN_CREDENTIALS.login && password === ADMIN_CREDENTIALS.password) {
                 // Сохраняем сессию
                 sessionStorage.setItem('admin_authenticated', 'true');
-                sessionStorage.setItem('admin_login_time', Date.now());
+                sessionStorage.setItem('admin_login_time', Date.now().toString());
+                sessionStorage.setItem('admin_username', username);
                 
                 // Перенаправляем в админку
                 window.location.href = 'admin.html';
@@ -237,14 +254,6 @@
                 setTimeout(() => {
                     document.getElementById('password').style.borderColor = '#ddd';
                 }, 1000);
-            }
-        });
-        
-        // Автозаполнение для тестирования
-        document.addEventListener('DOMContentLoaded', function() {
-            // Если уже авторизован - сразу в админку
-            if (sessionStorage.getItem('admin_authenticated') === 'true') {
-                window.location.href = 'admin.html';
             }
         });
     </script>
