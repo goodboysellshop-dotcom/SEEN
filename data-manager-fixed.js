@@ -1,4 +1,4 @@
-// data-manager-fixed.js - Рабочий менеджер данных без localStorage проблем
+// data-manager-fixed.js - Гибридный менеджер данных
 class FixedDataManager {
     constructor() {
         this.categories = [
@@ -8,109 +8,58 @@ class FixedDataManager {
         
         // Инициализируем данные в памяти
         this.data = this.loadInitialData();
+        this.storageKey = 'seen_search_data';
+        
+        console.log('DataManager инициализирован. Сайтов:', this.data.sites.length);
     }
 
-    // Загружаем начальные данные
+    // Загружаем начальные данные (гибридный подход)
     loadInitialData() {
-        // Проверяем, есть ли данные в sessionStorage (работает лучше чем localStorage)
         let savedData = null;
+        
+        // Пробуем загрузить из sessionStorage (приоритет - текущая сессия)
         try {
-            savedData = sessionStorage.getItem('seen_search_data');
+            savedData = sessionStorage.getItem(this.storageKey);
             if (savedData) {
                 const parsed = JSON.parse(savedData);
                 if (parsed && parsed.sites && Array.isArray(parsed.sites)) {
+                    console.log('Данные загружены из sessionStorage');
                     return parsed;
                 }
             }
         } catch (e) {
-            console.log('Не удалось загрузить из sessionStorage:', e);
+            console.warn('Ошибка загрузки из sessionStorage:', e);
+        }
+        
+        // Если нет в sessionStorage, пробуем localStorage (постоянное хранение)
+        try {
+            if (!savedData) {
+                savedData = localStorage.getItem(this.storageKey);
+                if (savedData) {
+                    const parsed = JSON.parse(savedData);
+                    if (parsed && parsed.sites && Array.isArray(parsed.sites)) {
+                        console.log('Данные загружены из localStorage');
+                        
+                        // Копируем из localStorage в sessionStorage
+                        try {
+                            sessionStorage.setItem(this.storageKey, savedData);
+                        } catch (e) {
+                            console.warn('Не удалось скопировать в sessionStorage:', e);
+                        }
+                        
+                        return parsed;
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('Ошибка загрузки из localStorage:', e);
         }
         
         // Если нет сохраненных данных, используем начальные
-        const initialSites = [
-            {
-                id: 1,
-                title: 'Google - Поисковая система',
-                url: 'https://www.google.com',
-                description: 'Крупнейшая в мире поисковая система. Поиск информации в интернете, картинки, видео, карты, переводы и многое другое.',
-                keywords: 'поиск, google, поисковая система, интернет, информация',
-                category: 'Технологии',
-                added_date: new Date().toISOString(),
-                is_active: true
-            },
-            {
-                id: 2,
-                title: 'YouTube - Видеохостинг',
-                url: 'https://www.youtube.com',
-                description: 'Самый популярный видеохостинг в мире. Просмотр видео, музыка, обучающие ролики, блоги и развлечения.',
-                keywords: 'видео, youtube, ютуб, музыка, развлечения',
-                category: 'Развлечения',
-                added_date: new Date(Date.now() - 86400000).toISOString(),
-                is_active: true
-            },
-            {
-                id: 3,
-                title: 'Википедия - Свободная энциклопедия',
-                url: 'https://www.wikipedia.org',
-                description: 'Многоязычная общедоступная свободно распространяемая энциклопедия, поддерживаемая некоммерческой организацией Фонд Викимедиа.',
-                keywords: 'энциклопедия, wikipedia, знания, информация, справочник',
-                category: 'Образование',
-                added_date: new Date(Date.now() - 172800000).toISOString(),
-                is_active: true
-            },
-            {
-                id: 4,
-                title: 'GitHub - Платформа для разработчиков',
-                url: 'https://www.github.com',
-                description: 'Крупнейший веб-сервис для хостинга IT-проектов и их совместной разработки. Система контроля версий Git.',
-                keywords: 'github, программирование, git, разработка, код',
-                category: 'Технологии',
-                added_date: new Date(Date.now() - 259200000).toISOString(),
-                is_active: true
-            },
-            {
-                id: 5,
-                title: 'BBC News - Новости',
-                url: 'https://www.bbc.com/news',
-                description: 'Британская новостная служба. Последние мировые новости, аналитика, репортажи и видео.',
-                keywords: 'новости, bbc, мир, политика, события',
-                category: 'Новости',
-                added_date: new Date(Date.now() - 345600000).toISOString(),
-                is_active: true
-            },
-            {
-                id: 6,
-                title: 'Amazon - Интернет-магазин',
-                url: 'https://www.amazon.com',
-                description: 'Крупнейшая в мире компания розничной торговли. Интернет-магазин электроники, книг, одежды и многого другого.',
-                keywords: 'amazon, магазин, покупки, электронная коммерция',
-                category: 'Бизнес',
-                added_date: new Date(Date.now() - 432000000).toISOString(),
-                is_active: true
-            },
-            {
-                id: 7,
-                title: 'National Geographic - Наука и природа',
-                url: 'https://www.nationalgeographic.com',
-                description: 'Научно-популярный журнал и медиа-компания. Статьи о природе, науке, истории и путешествиях.',
-                keywords: 'наука, природа, путешествия, фотография, история',
-                category: 'Наука',
-                added_date: new Date(Date.now() - 518400000).toISOString(),
-                is_active: true
-            },
-            {
-                id: 8,
-                title: 'Stack Overflow - Вопросы и ответы',
-                url: 'https://www.stackoverflow.com',
-                description: 'Крупнейший онлайн-сообщество программистов. Вопросы и ответы по программированию и разработке.',
-                keywords: 'программирование, вопросы, ответы, разработка, помощь',
-                category: 'Технологии',
-                added_date: new Date(Date.now() - 604800000).toISOString(),
-                is_active: true
-            }
-        ];
-
-        return {
+        console.log('Загружаем начальные демо-данные');
+        const initialSites = this.getInitialSites();
+        
+        const initialData = {
             sites: initialSites,
             stats: this.calculateStats(initialSites),
             settings: {
@@ -121,17 +70,138 @@ class FixedDataManager {
             },
             version: '2.0'
         };
+        
+        // Сохраняем начальные данные в оба хранилища
+        this.saveToBothStorages(initialData);
+        
+        return initialData;
     }
 
-    // Сохраняем данные
-    saveData() {
+    // Начальные демо-сайты
+    getInitialSites() {
+        const now = Date.now();
+        return [
+            {
+                id: 1,
+                title: 'Google - Поисковая система',
+                url: 'https://www.google.com',
+                description: 'Крупнейшая в мире поисковая система. Поиск информации в интернете, картинки, видео, карты, переводы и многое другое.',
+                keywords: 'поиск, google, поисковая система, интернет, информация',
+                category: 'Технологии',
+                added_date: new Date(now).toISOString(),
+                is_active: true
+            },
+            {
+                id: 2,
+                title: 'YouTube - Видеохостинг',
+                url: 'https://www.youtube.com',
+                description: 'Самый популярный видеохостинг в мире. Просмотр видео, музыка, обучающие ролики, блоги и развлечения.',
+                keywords: 'видео, youtube, ютуб, музыка, развлечения',
+                category: 'Развлечения',
+                added_date: new Date(now - 86400000).toISOString(),
+                is_active: true
+            },
+            {
+                id: 3,
+                title: 'Википедия - Свободная энциклопедия',
+                url: 'https://www.wikipedia.org',
+                description: 'Многоязычная общедоступная свободно распространяемая энциклопедия, поддерживаемая некоммерческой организацией Фонд Викимедиа.',
+                keywords: 'энциклопедия, wikipedia, знания, информация, справочник',
+                category: 'Образование',
+                added_date: new Date(now - 172800000).toISOString(),
+                is_active: true
+            },
+            {
+                id: 4,
+                title: 'GitHub - Платформа для разработчиков',
+                url: 'https://www.github.com',
+                description: 'Крупнейший веб-сервис для хостинга IT-проектов и их совместной разработки. Система контроля версий Git.',
+                keywords: 'github, программирование, git, разработка, код',
+                category: 'Технологии',
+                added_date: new Date(now - 259200000).toISOString(),
+                is_active: true
+            },
+            {
+                id: 5,
+                title: 'BBC News - Новости',
+                url: 'https://www.bbc.com/news',
+                description: 'Британская новостная служба. Последние мировые новости, аналитика, репортажи и видео.',
+                keywords: 'новости, bbc, мир, политика, события',
+                category: 'Новости',
+                added_date: new Date(now - 345600000).toISOString(),
+                is_active: true
+            },
+            {
+                id: 6,
+                title: 'Amazon - Интернет-магазин',
+                url: 'https://www.amazon.com',
+                description: 'Крупнейшая в мире компания розничной торговли. Интернет-магазин электроники, книг, одежды и многого другого.',
+                keywords: 'amazon, магазин, покупки, электронная коммерция',
+                category: 'Бизнес',
+                added_date: new Date(now - 432000000).toISOString(),
+                is_active: true
+            },
+            {
+                id: 7,
+                title: 'National Geographic - Наука и природа',
+                url: 'https://www.nationalgeographic.com',
+                description: 'Научно-популярный журнал и медиа-компания. Статьи о природе, науке, истории и путешествиях.',
+                keywords: 'наука, природа, путешествия, фотография, история',
+                category: 'Наука',
+                added_date: new Date(now - 518400000).toISOString(),
+                is_active: true
+            },
+            {
+                id: 8,
+                title: 'Stack Overflow - Вопросы и ответы',
+                url: 'https://www.stackoverflow.com',
+                description: 'Крупнейший онлайн-сообщество программистов. Вопросы и ответы по программированию и разработке.',
+                keywords: 'программирование, вопросы, ответы, разработка, помощь',
+                category: 'Технологии',
+                added_date: new Date(now - 604800000).toISOString(),
+                is_active: true
+            }
+        ];
+    }
+
+    // Сохраняем данные в оба хранилища
+    saveToBothStorages(data) {
+        const dataStr = JSON.stringify(data);
+        let savedAnywhere = false;
+        
+        // Пробуем сохранить в localStorage (постоянное хранилище)
         try {
-            sessionStorage.setItem('seen_search_data', JSON.stringify(this.data));
-            return true;
+            localStorage.setItem(this.storageKey, dataStr);
+            console.log('Данные сохранены в localStorage');
+            savedAnywhere = true;
+        } catch (e) {
+            console.warn('Не удалось сохранить в localStorage:', e);
+            
+            // Попробуем очистить старые данные, если не хватает места
+            try {
+                localStorage.removeItem(this.storageKey);
+                localStorage.setItem(this.storageKey, dataStr);
+                savedAnywhere = true;
+            } catch (e2) {
+                console.warn('Не удалось сохранить даже после очистки localStorage');
+            }
+        }
+        
+        // Пробуем сохранить в sessionStorage (сессионное хранилище)
+        try {
+            sessionStorage.setItem(this.storageKey, dataStr);
+            console.log('Данные сохранены в sessionStorage');
+            savedAnywhere = true;
         } catch (e) {
             console.warn('Не удалось сохранить в sessionStorage:', e);
-            return false;
         }
+        
+        return savedAnywhere;
+    }
+
+    // Сохраняем данные (публичный метод)
+    saveData() {
+        return this.saveToBothStorages(this.data);
     }
 
     // Получаем все сайты
@@ -186,8 +256,12 @@ class FixedDataManager {
             // Обновляем статистику
             this.data.stats = this.calculateStats(this.data.sites);
             
-            // Пытаемся сохранить
-            this.saveData();
+            // Пытаемся сохранить в оба хранилища
+            if (this.saveData()) {
+                console.log('Сайт успешно добавлен и сохранен:', newSite.title);
+            } else {
+                console.warn('Сайт добавлен, но не удалось сохранить в хранилище');
+            }
             
             // Отправляем событие обновления
             this.triggerUpdate();
@@ -214,7 +288,12 @@ class FixedDataManager {
         };
 
         this.data.stats = this.calculateStats(this.data.sites);
-        this.saveData();
+        
+        // Сохраняем изменения
+        if (this.saveData()) {
+            console.log('Сайт обновлен и сохранен:', id);
+        }
+        
         this.triggerUpdate();
         
         return true;
@@ -230,7 +309,12 @@ class FixedDataManager {
         }
 
         this.data.stats = this.calculateStats(this.data.sites);
-        this.saveData();
+        
+        // Сохраняем изменения
+        if (this.saveData()) {
+            console.log('Сайт удален и изменения сохранены:', id);
+        }
+        
         this.triggerUpdate();
         
         return true;
@@ -302,27 +386,49 @@ class FixedDataManager {
             byCategory[category] = (byCategory[category] || 0) + 1;
         });
 
+        // Рассчитываем размер данных
+        const dataSize = encodeURI(JSON.stringify(this.data)).split(/%..|./).length - 1;
+        const sizeInKB = (dataSize / 1024).toFixed(2);
+
         return {
             totalSites: sites.length,
             activeSites: sites.filter(s => s.is_active).length,
             addedToday: addedToday,
             byCategory: byCategory,
+            dataSizeKB: sizeInKB,
             lastUpdated: new Date().toISOString()
         };
     }
 
-    // Сбрасываем данные
+    // Сбрасываем данные до начального состояния
     resetData() {
-        const initialData = this.loadInitialData();
+        const initialData = {
+            sites: this.getInitialSites(),
+            stats: this.calculateStats(this.getInitialSites()),
+            settings: {
+                resultsPerPage: 25,
+                enableSuggestions: true,
+                highlightResults: true,
+                showMetadata: true
+            },
+            version: '2.0'
+        };
+        
         this.data = initialData;
         
+        // Очищаем оба хранилища и сохраняем начальные данные
         try {
-            sessionStorage.removeItem('seen_search_data');
+            localStorage.removeItem(this.storageKey);
+            sessionStorage.removeItem(this.storageKey);
         } catch (e) {
-            // Игнорируем ошибку очистки
+            // Игнорируем ошибки очистки
         }
         
+        this.saveToBothStorages(initialData);
+        
+        console.log('Данные сброшены до начального состояния');
         this.triggerUpdate();
+        
         return this.data;
     }
 
@@ -342,7 +448,8 @@ class FixedDataManager {
             const event = new CustomEvent('seenDataUpdated', {
                 detail: { 
                     timestamp: new Date().toISOString(),
-                    siteCount: this.data.sites.length
+                    siteCount: this.data.sites.length,
+                    stats: this.data.stats
                 }
             });
             window.dispatchEvent(event);
@@ -380,7 +487,38 @@ class FixedDataManager {
                 return '';
         }
     }
+    
+    // Получаем информацию о хранилище
+    getStorageInfo() {
+        let localStorageSize = 'недоступно';
+        let sessionStorageSize = 'недоступно';
+        
+        try {
+            localStorageSize = localStorage.getItem(this.storageKey) 
+                ? `${(localStorage.getItem(this.storageKey).length / 1024).toFixed(2)} KB` 
+                : 'нет данных';
+        } catch (e) {
+            localStorageSize = 'ошибка';
+        }
+        
+        try {
+            sessionStorageSize = sessionStorage.getItem(this.storageKey) 
+                ? `${(sessionStorage.getItem(this.storageKey).length / 1024).toFixed(2)} KB` 
+                : 'нет данных';
+        } catch (e) {
+            sessionStorageSize = 'ошибка';
+        }
+        
+        return {
+            localStorage: localStorageSize,
+            sessionStorage: sessionStorageSize,
+            inMemory: `${(JSON.stringify(this.data).length / 1024).toFixed(2)} KB`,
+            sitesCount: this.data.sites.length
+        };
+    }
 }
 
 // Создаем глобальный экземпляр
+console.log('Создаем глобальный экземпляр FixedDataManager...');
 window.dataManager = new FixedDataManager();
+console.log('FixedDataManager готов к использованию');
