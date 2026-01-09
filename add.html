@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавить сайт - SEEN</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Шапка -->
+        <header class="header">
+            <div class="logo">
+                <h1>SEEN</h1>
+                <span class="logo-subtitle">Поисковая система</span>
+            </div>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Поиск</a>
+                <a href="add.html" class="nav-link active">Добавить сайт</a>
+                <a href="admin.html" class="nav-link">Админ</a>
+            </nav>
+        </header>
+
+        <!-- Форма добавления -->
+        <main class="main">
+            <div class="form-container">
+                <h2 class="form-title">Добавить сайт в SEEN</h2>
+                <p class="form-description">
+                    Заполните форму, чтобы добавить ваш сайт в поисковую систему.
+                    После модерации он появится в результатах поиска.
+                </p>
+
+                <form id="addSiteForm" class="add-form">
+                    <div class="form-group">
+                        <label for="siteUrl">URL сайта *</label>
+                        <input 
+                            type="url" 
+                            id="siteUrl" 
+                            class="form-input" 
+                            placeholder="https://example.com"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="siteTitle">Название сайта *</label>
+                        <input 
+                            type="text" 
+                            id="siteTitle" 
+                            class="form-input" 
+                            placeholder="Мой крутой сайт"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="siteDescription">Описание *</label>
+                        <textarea 
+                            id="siteDescription" 
+                            class="form-input form-textarea" 
+                            placeholder="Опишите ваш сайт (до 500 символов)"
+                            maxlength="500"
+                            required
+                        ></textarea>
+                        <span class="char-counter"><span id="charCount">0</span>/500</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="siteCategory">Категория *</label>
+                        <select id="siteCategory" class="form-input" required>
+                            <option value="">Выберите категорию</option>
+                            <option value="business">Бизнес</option>
+                            <option value="education">Образование</option>
+                            <option value="entertainment">Развлечения</option>
+                            <option value="news">Новости</option>
+                            <option value="technology">Технологии</option>
+                            <option value="social">Социальные сети</option>
+                            <option value="shopping">Покупки</option>
+                            <option value="other">Другое</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="siteKeywords">Ключевые слова</label>
+                        <input 
+                            type="text" 
+                            id="siteKeywords" 
+                            class="form-input" 
+                            placeholder="слово1, слово2, слово3"
+                        >
+                        <span class="form-hint">Через запятую, до 10 слов</span>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        Отправить на модерацию
+                    </button>
+                </form>
+
+                <!-- Сообщение об успехе -->
+                <div id="successMessage" class="success-message hidden">
+                    <div class="success-icon">✓</div>
+                    <h3>Сайт отправлен!</h3>
+                    <p>Ваш сайт будет проверен модератором и добавлен в поисковую систему.</p>
+                    <a href="index.html" class="back-link">Вернуться к поиску</a>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>SEEN © 2025 | Открытая поисковая система</p>
+        </footer>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initAddPage();
+        });
+    </script>
+</body>
+</html>
